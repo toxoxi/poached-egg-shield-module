@@ -4,7 +4,10 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 
-&lt { tapping-term-ms = <200>; flavor = "balanced"; };
+// Match the author-published O51Go VIA config: TAPPING_TERM 180,
+// HOLD_ON_OTHER_KEY_PRESS and QUICK_TAP_TERM 0.
+&lt { tapping-term-ms = <180>; flavor = "hold-preferred"; quick-tap-ms = <0>; };
+&mt { tapping-term-ms = <180>; flavor = "hold-preferred"; quick-tap-ms = <0>; };
 
 / {
     behaviors {

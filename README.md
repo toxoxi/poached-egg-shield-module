@@ -7,7 +7,9 @@ Mac・US配列用。ZMK v0.3.0。公式定義の50キーに合わせた設定で
 - 左: MO(3) / 未割当 / Alt / Command / 英数(L1長押し) / Space / 未割当
 - 右: Enter / 未割当 / かな(L2長押し) / Backspace / Escape / 未割当 / 未割当
 
-英数・かなはLANG2・LANG1を送信します。長押し判定は200ms、balancedです。gofortyの元のタイミング設定はPDFから分からないため、打鍵感は実機で調整してください。
+英数・かなはLANG2・LANG1を送信します。長押し判定は180ms（0.18秒）、hold-preferred、quick-tap-ms=0です。作者公開のO51Go用ソースのkeymaps/via/config.h（TAPPING_TERM 180、HOLD_ON_OTHER_KEY_PRESS、QUICK_TAP_TERM 0）に合わせています。英数/かなのレイヤータップと、レイヤー3の修飾キータップの両方へ適用しています。別キーを押した時点でも長押しとして確定します。出荷された実機のファームウェア版は未確認です。
+
+確認した作者公開ソース: https://drive.google.com/file/d/1uApWWUBnNvLn2EJqYTo0tje5RUet5Dad/view
 
 ## レイヤー
 
