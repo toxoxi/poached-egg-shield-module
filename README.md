@@ -1,66 +1,54 @@
-# Poached Eggs
+# poached-eggs / goforty 配列
 
-自作の左右分割キーボード **Poached Eggs** 用の [ZMK](https://zmk.dev/) ファームウェア（シールドモジュール）です。
+Mac・US配列用。ZMK v0.3.0。公式定義の50キーに合わせた設定です。
 
-このリポジトリは ZMK の **外部モジュール** 兼 **ユーザー設定 (user config)** として構成されており、GitHub Actions で左右それぞれのファームウェア（`.uf2`）をビルドできます。
+## 最下段（各行は左から右）
 
----
+- 左: MO(3) / 未割当 / Alt / Command / 英数(L1長押し) / Space / 未割当
+- 右: Enter / 未割当 / かな(L2長押し) / Backspace / Escape / 未割当 / 未割当
 
-## 特徴
+英数・かなはLANG2・LANG1を送信します。長押し判定は200ms、balancedです。gofortyの元のタイミング設定はPDFから分からないため、打鍵感は実機で調整してください。
 
-- **ZMK ファームウェア**（`v0.3.0` に固定）
-- **左右分割**構成（左=セントラル / 右=ペリフェラル、Bluetooth 接続）
-- **ZMK Studio 対応** — PC やブラウザからキーマップをリアルタイム編集可能（ロック機能付き）
-- **4 レイヤー** — QWERTY / 数字・記号 / ファンクション・矢印 / Bluetooth 設定
+## レイヤー
 
-## ビルド方法
+0. Base: 文字配列。右Shiftは追加せず、右手3段目の末尾は元のPDF同様に未割当。
+1. Symbols: 元の数字・記号配列。中央列のSpace/Ctrl+Wは削除。
+2. Navigation: 元のファンクション・矢印・括弧配列。Macro 0はCtrl+Alt+Left、Macro 1はCtrl+Alt+Rightの同時押しを1回送信。
+3. Shortcuts: 元のショートカット・テンキー配列。中央列のShift+Command+3は削除。右下はCtrl+Shift+Command+4。Vの位置はShift+Command+4。右端のEnterは短押しEnter・長押しCommand、Escは短押しEsc・長押しShift。
+4. System: 新規の管理専用レイヤー。旧レイヤー4〜6は移植していません。
 
-### GitHub Actions（推奨）
+## BluetoothとStudio
 
-1. このリポジトリに push する（または GitHub の **Actions** タブから手動実行）。
-2. ワークフローが完了したら、実行結果ページ下部の **Artifacts** から `firmware` をダウンロード。
-3. ZIP の中に `poached_eggs_left.uf2` と `poached_eggs_right.uf2` が含まれます。
+左下MO(3)を押したまま、右最下段の右から2番目を長押しするとSystemへ入ります。
 
-### ローカルでビルドする場合
+- 左上段の左から1〜5番目: Bluetoothプロファイル1〜5を選択。
+- 左中段の一番左（通常Ctrl）: Studio Unlock。
+- 2つのレイヤーキーを離すとBaseに戻ります。
 
-ZMK の[ローカルビルド環境](https://zmk.dev/docs/development/local-toolchain/setup)を用意した上で、別の west ワークスペースにこのリポジトリをモジュールとして取り込みます。詳細は ZMK 公式ドキュメントを参照してください。
+ペアリング消去キーは誤操作防止のため割り当てていません。
 
-## 書き込み（フラッシュ）方法
+## ビルドと書き込み
 
-XIAO BLE への書き込みは UF2 ブートローダ経由で行います。
+設定: `config/poached_eggs.keymap`
 
-1. キーボードを USB で PC に接続する。
-2. **リセットボタンを素早く 2 回押す**（ダブルタップ）。
-3. `XIAO-SENSE` などの名前で USB ドライブとしてマウントされる。
-4. 対応する `.uf2` ファイル（左手なら `poached_eggs_left.uf2`）をドライブにコピーする。
-5. 自動的に再起動して書き込み完了。左右それぞれで実施する。
+GitHub ActionsのBuildワークフロー成功後、firmwareアーティファクトをダウンロードします。左右のUF2名にleft/rightが含まれることを確認してください。
 
-> 初回は左右ともに書き込み、その後ペアリングしてください。
+1. 左側をUSB接続し、リセットスイッチを素早く2回押します。
+2. 表示されたXIAO-SENSEドライブへleftのUF2をコピーします。
+3. 右側も同様にrightのUF2を書き込みます。
+4. 電源を入れ、Macで接続・入力確認します。
 
-## キーマップ
+既にZMK Studioで保存した設定があると、UF2を書き換えても保存済み設定が優先されることがあります。その場合はStudioでキーマップをファームウェア初期値へ戻してください。ペアリング全消去用ファームウェアは通常不要です。
 
-`config/poached_eggs.keymap` で定義しています。レイヤーは 5 つです。
+## 実機確認
 
-| #   | レイヤー | アクセス方法                                         | 用途                                     |
-| --- | -------- | ---------------------------------------------------- | ---------------------------------------- |
-| 0   | default  | （ベース）                                           | QWERTY 配列                              |
-| 1   | lower    | 左親指 `&mo 1` を長押し                              | 数字・記号                               |
-| 2   | raise    | 右親指 `&mo 2` を長押し                              | ファンクション・矢印・括弧               |
-| 3   | bt       | lower + raise を同時に長押し（各レイヤーの `&mo 3`） | Bluetooth 選択/クリア・Studio ロック解除 |
-| 4   | num      | default 右下角の `&tog 4` でトグル                   | テンキー（右手）                         |
+- 英数/かなの短押し、押しながらの数字・矢印。
+- レイヤー2のCtrl+Alt+左右。
+- MO(3)+右下の範囲選択スクリーンショット。選択後、画像を貼り付けて確認。
+- Space/Enter/Backspace/Escapeの位置。
 
-### キーマップ図（自動生成）
+ファームウェアのビルド確認と、実機上の入力動作確認は別です。実機確認は書き込み後に行ってください。
 
-下図は [keymap-drawer](https://github.com/caksoylar/keymap-drawer) により GitHub Actions（[draw-keymap.yml](.github/workflows/draw-keymap.yml)）で自動生成されます。`config/poached_eggs.keymap` を変更して push すると更新されます。未割り当て(none)は ∅（グレー）、透過(trans)は ▽（青）で色分けしています。
-
-![Poached Eggs keymap](keymap-drawer/poached_eggs.svg)
-
-bt レイヤーの主なキー:
-
-- `BT_CLR` … 現在のプロファイルのペアリング情報を消去
-- `BT0`〜`BT4` … Bluetooth プロファイルの切り替え
-- `STUDIO` … `&studio_unlock`（ZMK Studio の編集ロック解除）
-
-## ZMK Studio での編集
-
-このキーボードは ZMK Studio に対応しています。USB 接続した状態で [ZMK Studio](https://zmk.studio/) を開き、bt レイヤーの `&studio_unlock` でロックを解除すると、キーマップをその場で編集・反映できます。
+公式: https://site.omuken.me/poached-eggs/user-guide/
+ベース: https://github.com/omwegg/poached-egg-shield-module
+ベースcommit: 92d67c950a6f8579f6f097341c0454bcfce52a9c

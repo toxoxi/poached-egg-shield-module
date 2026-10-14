@@ -1,67 +1,81 @@
+// goforty migration for poached-eggs, macOS US layout.
+// Rows: left 6 + right 6, repeated 3 times; bottom left 7 + right 7.
 #include <behaviors.dtsi>
-#include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+
+&lt { tapping-term-ms = <200>; flavor = "balanced"; };
 
 / {
-    macros {
-        // "00"（KP_N0 を 2 回送る）numpad 用マクロ
-        num_00: num_00 {
-            compatible = "zmk,behavior-macro";
+    behaviors {
+        gresc: grave_escape {
+            compatible = "zmk,behavior-mod-morph";
             #binding-cells = <0>;
-            bindings = <&kp KP_N0 &kp KP_N0>;
+            bindings = <&kp ESC>, <&kp GRAVE>;
+            mods = <(MOD_LSFT | MOD_RSFT | MOD_LGUI | MOD_RGUI)>;
         };
     };
-
+    macros {
+        macro_left: macro_left {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <5>;
+            bindings = <&macro_tap &kp LC(LA(LEFT))>;
+        };
+        macro_right: macro_right {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <5>;
+            bindings = <&macro_tap &kp LC(LA(RIGHT))>;
+        };
+    };
     keymap {
         compatible = "zmk,keymap";
-
-        default_layer {
+        layer_0 {
             display-name = "Base";
             bindings = <
-&kp TAB    &kp Q  &kp W  &kp E     &kp R     &kp T                      &kp Y  &kp U     &kp I      &kp O    &kp P     &kp MINUS
-&kp LCTRL  &kp A  &kp S  &kp D     &kp F     &kp G                      &kp H  &kp J     &kp K      &kp L    &kp SEMI  &kp SQT
-&kp LSHFT  &kp Z  &kp X  &kp C     &kp V     &kp B                      &kp N  &kp M     &kp COMMA  &kp DOT  &kp FSLH  &kp RSHFT
-&caps_word &none  &none  &kp LGUI  &kp LALT  &mo 1  &kp SPACE  &kp RET  &mo 2  &kp BSPC  &kp RGUI   &none    &none     &tog 4
+                &kp TAB  &kp Q  &kp W  &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &kp MINUS
+                &kp LCTRL  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp SEMI  &kp SQT
+                &kp LSHFT  &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH  &none
+                &mo 3  &none  &kp LALT  &kp LGUI  &lt 1 LANG2  &kp SPACE  &none  &kp RET  &none  &lt 2 LANG1  &kp BSPC  &kp ESC  &none  &none
             >;
         };
-
-        lower_layer {
-            display-name = "Lower";
+        layer_1 {
+            display-name = "Symbols";
             bindings = <
-&kp ESC    &kp N1    &kp N2  &kp N3    &kp N4      &kp N5                      &kp N6     &kp N7    &kp N8     &kp N9          &kp N0           &kp GRAVE
-&kp GRAVE  &kp EXCL  &kp AT  &kp HASH  &kp DOLLAR  &kp PRCNT                   &kp CARET  &kp AMPS  &kp ASTRK  &kp LPAR        &kp RPAR         &kp TILDE
-&kp RET    &none     &none   &none     &none       &none                       &none      &none     &none      &kp LEFT_BRACE  &kp RIGHT_BRACE  &kp PIPE
-&none      &none     &none   &trans    &trans      &trans     &kp DEL  &trans  &mo 3      &trans    &trans     &none           &none            &none
+                &gresc  &kp EXCL  &kp AT  &kp HASH  &kp DOLLAR  &kp PRCNT  &kp CARET  &kp AMPS  &kp ASTRK  &kp LPAR  &kp RPAR  &kp UNDER
+                &kp N0  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp BSLH  &kp PIPE  &kp GRAVE  &kp TILDE  &kp COLON  &kp DQT
+                &trans  &trans  &trans  &trans  &trans  &trans  &none  &none  &kp LT  &kp GT  &kp QMARK  &none
+                &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
             >;
         };
-
-        raise_layer {
-            display-name = "Raise";
+        layer_2 {
+            display-name = "Navigation";
             bindings = <
-&kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &kp F6                   &kp F7    &kp F8     &kp F9     &kp F10   &kp F11    &kp F12
-&none   &none   &none   &none   &none   &none                    &none     &kp LEFT   &kp DOWN   &kp UP    &kp RIGHT  &none
-&none   &none   &none   &none   &none   &none                    &kp PLUS  &kp MINUS  &kp EQUAL  &kp LBKT  &kp RBKT   &kp BSLH
-&none   &none   &none   &trans  &trans  &mo 3   &trans  &kp DEL  &trans    &trans     &trans     &none     &none      &none
+                &kp ESC  &kp EXCL  &kp AT  &kp HASH  &kp DOLLAR  &kp PRCNT  &none  &macro_left  &kp UP  &macro_right  &none  &none
+                &trans  &kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &none  &kp LEFT  &kp DOWN  &kp RIGHT  &none  &none
+                &trans  &kp F6  &kp F7  &kp F8  &kp F9  &kp F10  &kp KP_PLUS  &kp KP_MINUS  &kp KP_EQUAL  &kp LBKT  &kp RBKT  &none
+                &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
             >;
         };
-
-        bt_layer {
-            display-name = "BT";
+        layer_3 {
+            display-name = "Shortcuts";
             bindings = <
-&bt BT_CLR      &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4                &none  &none  &none  &none  &none  &none
-&studio_unlock  &none         &none         &none         &none         &none                       &none  &none  &none  &none  &none  &none
-&none           &none         &none         &none         &none         &none                       &none  &none  &none  &none  &none  &none
-&kp O           &kp M         &kp U         &none         &none         &none         &none  &none  &none  &none  &none  &kp K  &kp E  &kp N
+                &kp LS(TAB)  &kp LG(N1)  &kp LG(N2)  &kp LG(N3)  &kp LG(N4)  &kp LG(N5)  &none  &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_N0  &trans
+                &trans  &kp LG(N6)  &kp HOME  &kp PG_DN  &kp END  &none  &none  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp FSLH  &mt LGUI RET
+                &trans  &kp LSHFT  &kp KP_N1  &kp F12  &kp LG(LS(N4))  &none  &none  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp DOT  &mt LSHFT ESC
+                &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &mo 4  &kp LC(LS(LG(N4)))
             >;
         };
-
-        num_layer {
-            display-name = "Num";
+        layer_4 {
+            display-name = "System";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans                       &kp KP_DIVIDE    &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_MINUS  &trans
-&trans  &trans  &trans  &trans  &trans  &trans                       &kp KP_MULTIPLY  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_PLUS   &trans
-&trans  &trans  &trans  &trans  &trans  &trans                       &kp KP_EQUAL     &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_DOT    &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp RET  &none  &kp BSPC  &kp KP_N0  &num_00  &kp COMMA  &trans
+                &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &none  &none  &none  &none  &none  &none  &none
+                &studio_unlock  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+                &trans  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &trans  &none
             >;
         };
     };
